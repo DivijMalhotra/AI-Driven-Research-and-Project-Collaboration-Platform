@@ -70,7 +70,6 @@ This creates an ecosystem where researchers can efficiently *connect, collaborat
 ![WhatsApp Image 2025-08-20 at 22 21 44_a32e8239](https://github.com/user-attachments/assets/f3f6b123-6c41-45b9-8962-3c46ef8b4f45)
 
 
-
 ## ⚙ How to Run the Project
 
 1. *Clone the repository*  
