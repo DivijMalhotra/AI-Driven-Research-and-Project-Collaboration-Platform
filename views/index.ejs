@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Collaboration Platform</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Profile Section -->
+    <section class="profile">
+      <h3>Create Profile</h3>
+      <form id="profile-form">
+        <input type="text" name="name" placeholder="Your Name" required>
+        <select name="role">
+          <option value="student">Student</option>
+          <option value="faculty">Faculty</option>
+        </select>
+        <input type="text" name="department" placeholder="Department">
+        <input type="text" name="skills" placeholder="Skills (comma separated)">
+        <input type="text" name="researchInterests" placeholder="Research Interests (comma separated)">
+        <button type="submit">Save Profile</button>
+      </form>
+      <div id="profile-result"></div>
+    </section>
+
+    <!-- Collaborators Section -->
+    <section class="collaborators">
+      <h3>Find Collaborators</h3>
+      <form id="collab-form">
+        <input type="text" id="interest" placeholder="Enter a research interest">
+        <button type="submit">Search</button>
+      </form>
+      <ul id="collab-results"></ul>
+    </section>
+
+    <!-- Projects Section -->
+    <section class="projects">
+      <h3>Create Project</h3>
+      <form id="project-form">
+        <input type="text" name="title" placeholder="Project Title" required>
+        <input type="text" name="description" placeholder="Project Description" required>
+        <button type="submit">Create Project</button>
+      </form>
+
+      <h3>Available Projects</h3>
+      <ul>
+        <% projects.forEach(p => { %>
+          <li><a href="/project/<%= p._id %>"><%= p.title %></a> - <%= p.description %></li>
+        <% }) %>
+      </ul>
+    </section>
+
+    <!-- Chat Section -->
+    <div class="chat">
+    <header>
+      <h2>🤖 AI Live Chat</h2>
+    </header>
+
+    <div id="messages"></div>
+
+    <div id="typing">AI is thinking...</div>
+
+    <footer>
+      <form id="form" class="chat-input">
+        <input id="input" type="text" placeholder="Type a message..." autocomplete="off">
+        <label for="file-upload" class="file-upload-label">
+          📎
+        </label>
+        <input id="file-upload" type="file" style="display: none;">
+        <button type="submit">➤</button>
+      </form>
+    </footer>
+  </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="/script.js"></script>
+</body>
+</html>
