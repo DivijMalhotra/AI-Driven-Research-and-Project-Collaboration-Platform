@@ -3,44 +3,74 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= project.title %> - Project Room</title>
+  <meta name="description" content="Project Workspace">
+  <title><%= project.title %> - NexusAI Project Room</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
   <link rel="stylesheet" href="/style.css">
 </head>
-<body>
-  <div class="container">
+<body class="project-page">
+  <div class="background-effects">
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+    <div class="glow glow-3"></div>
+  </div>
+
+  <main class="container project-layout">
     <!-- Project Info Card -->
-    <section class="projects">
-      <h2>📂 <%= project.title %></h2>
-      <p><%= project.description %></p>
-    </section>
+    <aside class="sidebar">
+      <a href="/" class="back-link">← Back to Hub</a>
+      <section class="glass-panel project-info">
+        <div class="project-header">
+          <span class="icon" style="font-size: 2rem;">📂</span>
+          <h2 style="margin-top: 10px;"><%= project.title %></h2>
+        </div>
+        <div class="project-meta">
+          <p class="description" style="color: var(--text-muted); line-height: 1.6;"><%= project.description %></p>
+        </div>
+      </section>
+    </aside>
 
     <!-- Project Chat Card -->
-    <div class="chat">
-      <header>
-        <h2>💬 Project Chat</h2>
-      </header>
+    <section class="chat-container">
+      <div class="glass-panel chat project-chat">
+        <header class="chat-header">
+          <h2><span class="icon">💬</span> Team Chat</h2>
+          <p class="subtitle"><%= project.title %> Workspace</p>
+        </header>
 
-      <div id="project-messages" class="messages-area">
-        <% project.messages.forEach(m => { %>
-          <div class="message <%= m.role %>">
-            <span><%= m.text %></span>
-          </div>
-        <% }) %>
+        <div id="project-messages" class="messages-area">
+          <% if(project.messages.length === 0) { %>
+            <div class="empty-state">No messages yet. Start the conversation!</div>
+          <% } %>
+          <% project.messages.forEach(m => { %>
+            <div class="message chat-message <%= (m.sender && m.sender._id == currentUserId) ? 'sent' : 'received' %>">
+              <div class="chat-sender"><%= m.sender?.name || "Unknown User" %></div>
+              <div class="chat-bubble"><%= m.text %></div>
+            </div>
+          <% }) %>
+        </div>
+
+        <footer class="chat-footer">
+          <form id="project-form-chat" class="chat-input-form" data-project-id="<%= project._id %>">
+            <div class="input-wrapper">
+              <input type="text" id="project-input" placeholder="Type a message to your team..." autocomplete="off">
+              <button type="submit" class="btn-send" aria-label="Send Message">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
+            </div>
+          </form>
+        </footer>
       </div>
-
-      <footer>
-        <form id="project-form-chat" class="chat-input" data-project-id="<%= project._id %>">
-          <input type="text" id="project-input" placeholder="Type a message..." autocomplete="off">
-          <button type="submit">➤</button>
-        </form>
-      </footer>
-    </div>
-  </div>
+    </section>
+  </main>
 
   <script src="/script.js"></script>
   <script>
-  window.currentUserId = "<%= currentUserId %>";
-</script>
-
+    window.currentUserId = "<%= currentUserId %>";
+  </script>
 </body>
 </html>

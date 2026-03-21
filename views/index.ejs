@@ -3,77 +3,132 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A premium AI-driven platform for research and project collaboration.">
   <title>AI Collaboration Platform</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <div class="container">
-    <!-- Profile Section -->
-    <section class="profile">
-      <h3>Create Profile</h3>
-      <form id="profile-form">
-        <input type="text" name="name" placeholder="Your Name" required>
-        <select name="role">
-          <option value="student">Student</option>
-          <option value="faculty">Faculty</option>
-        </select>
-        <input type="text" name="department" placeholder="Department">
-        <input type="text" name="skills" placeholder="Skills (comma separated)">
-        <input type="text" name="researchInterests" placeholder="Research Interests (comma separated)">
-        <button type="submit">Save Profile</button>
-      </form>
-      <div id="profile-result"></div>
-    </section>
+  <div class="background-effects">
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+    <div class="glow glow-3"></div>
+  </div>
 
-    <!-- Collaborators Section -->
-    <section class="collaborators">
-      <h3>Find Collaborators</h3>
-      <form id="collab-form">
-        <input type="text" id="interest" placeholder="Enter a research interest">
-        <button type="submit">Search</button>
-      </form>
-      <ul id="collab-results"></ul>
-    </section>
+  <main class="container">
+    <aside class="sidebar">
+      <h1 class="brand-title">Nexus<span>AI</span></h1>
+      
+      <!-- Profile Section -->
+      <section class="glass-panel profile">
+        <h3><span class="icon">👤</span> Create Profile</h3>
+        <form id="profile-form">
+          <div class="input-group">
+            <input type="text" name="name" placeholder="Your Name" required>
+          </div>
+          <div class="input-group">
+            <select name="role">
+              <option value="student">Student</option>
+              <option value="faculty">Faculty</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <input type="text" name="department" placeholder="Department">
+          </div>
+          <div class="input-group">
+            <input type="text" name="skills" placeholder="Skills (comma separated)">
+          </div>
+          <div class="input-group">
+            <input type="text" name="researchInterests" placeholder="Research Interests (comma separated)">
+          </div>
+          <button type="submit" class="btn-primary">Save Profile</button>
+        </form>
+        <div id="profile-result" class="result-msg"></div>
+      </section>
 
-    <!-- Projects Section -->
-    <section class="projects">
-      <h3>Create Project</h3>
-      <form id="project-form">
-        <input type="text" name="title" placeholder="Project Title" required>
-        <input type="text" name="description" placeholder="Project Description" required>
-        <button type="submit">Create Project</button>
-      </form>
+      <!-- Collaborators Section -->
+      <section class="glass-panel collaborators">
+        <h3><span class="icon">🤝</span> Find Collaborators</h3>
+        <form id="collab-form">
+          <div class="input-group search-group">
+            <input type="text" id="interest" placeholder="Enter a research interest">
+            <button type="submit" class="btn-icon">🔍</button>
+          </div>
+        </form>
+        <ul id="collab-results" class="results-list"></ul>
+      </section>
 
-      <h3>Available Projects</h3>
-      <ul>
-        <% projects.forEach(p => { %>
-          <li><a href="/project/<%= p._id %>"><%= p.title %></a> - <%= p.description %></li>
-        <% }) %>
-      </ul>
-    </section>
+      <!-- Projects Section -->
+      <section class="glass-panel projects">
+        <h3><span class="icon">🚀</span> Create Project</h3>
+        <form id="project-form">
+          <div class="input-group">
+            <input type="text" name="title" placeholder="Project Title" required>
+          </div>
+          <div class="input-group">
+            <input type="text" name="description" placeholder="Project Description" required>
+          </div>
+          <button type="submit" class="btn-primary">Create Project</button>
+        </form>
+
+        <h3 class="mt-4"><span class="icon">📂</span> Available Projects</h3>
+        <ul class="project-list">
+          <% projects.forEach(p => { %>
+            <li>
+              <a href="/project/<%= p._id %>" class="project-card-link">
+                <div class="project-card">
+                  <h4><%= p.title %></h4>
+                  <p><%= p.description %></p>
+                </div>
+              </a>
+            </li>
+          <% }) %>
+        </ul>
+      </section>
+    </aside>
 
     <!-- Chat Section -->
-    <div class="chat">
-    <header>
-      <h2>🤖 AI Live Chat</h2>
-    </header>
+    <section class="chat-container">
+      <div class="glass-panel chat">
+        <header class="chat-header">
+          <h2><span class="pulse-dot"></span> AI Assistant</h2>
+          <p class="subtitle">Powered by Gemini 1.5</p>
+        </header>
 
-    <div id="messages"></div>
+        <div id="messages" class="messages-area">
+          <div class="message ai greeting">
+            <div class="chat-bubble">
+              Welcome to NexusAI. How can I assist with your research today?
+            </div>
+          </div>
+        </div>
 
-    <div id="typing">AI is thinking...</div>
+        <div id="typing" class="typing-indicator">
+          <span></span><span></span><span></span>
+        </div>
 
-    <footer>
-      <form id="form" class="chat-input">
-        <input id="input" type="text" placeholder="Type a message..." autocomplete="off">
-        <label for="file-upload" class="file-upload-label">
-          📎
-        </label>
-        <input id="file-upload" type="file" style="display: none;">
-        <button type="submit">➤</button>
-      </form>
-    </footer>
-  </div>
-  </div>
+        <footer class="chat-footer">
+          <form id="form" class="chat-input-form">
+            <div class="input-wrapper">
+              <input id="input" type="text" placeholder="Type a message..." autocomplete="off">
+              <label for="file-upload" class="file-upload-label" title="Upload File">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+              </label>
+              <input id="file-upload" type="file" style="display: none;">
+              <button type="submit" class="btn-send" aria-label="Send Message">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
+            </div>
+          </form>
+        </footer>
+      </div>
+    </section>
+  </main>
 
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="/script.js"></script>
