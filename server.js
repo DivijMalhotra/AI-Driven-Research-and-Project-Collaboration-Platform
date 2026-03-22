@@ -1,5 +1,4 @@
 const express = require("express")
-const bodyParser = require("body-parser")
 const { GoogleGenerativeAI } = require("@google/generative-ai")
 const { GoogleAIFileManager } = require("@google/generative-ai/server")
 const session = require("express-session")
@@ -9,10 +8,10 @@ require("dotenv").config()
 
 // Setup app
 const app = express()
-const upload = multer({ dest: "uploads" })
+const upload = multer({ dest: "/tmp" })  // ✅ fixed for Vercel
 app.set("view engine", "ejs")
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(express.json())                          // ✅ no need for body-parser
+app.use(express.urlencoded({ extended: true }))
 app.use(express.static("public"))
 
 app.use(session({
@@ -22,11 +21,13 @@ app.use(session({
 }))
 
 // MongoDB connection
-mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-}).then(() => console.log("✅ MongoDB connected"))
-    .catch(err => console.error("❌ MongoDB error:", err))
+let isConnected = false;
+async function connectDB() {
+    if (isConnected) return;
+    await mongoose.connect(process.env.MONGODB_URI);
+    isConnected = true;
+}
+connectDB();
 
 // Schemas
 const userSchema = new mongoose.Schema({
@@ -59,14 +60,12 @@ const fileManager = new GoogleAIFileManager(process.env.GEMINI_API_KEY)
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
 
 // Routes
-// Homepage
 app.get("/", async (req, res) => {
-    req.session.history = [] // reset history on refresh
+    req.session.history = []
     const projects = await Project.find()
     res.render("index", { projects })
 })
 
-// Create profile
 app.post("/profile", async (req, res) => {
     try {
         const { name, role, department, skills, researchInterests } = req.body
@@ -84,7 +83,6 @@ app.post("/profile", async (req, res) => {
     }
 })
 
-// Find collaborators
 app.get("/collaborators/:interest", async (req, res) => {
     try {
         const interest = req.params.interest.toLowerCase()
@@ -97,7 +95,6 @@ app.get("/collaborators/:interest", async (req, res) => {
     }
 })
 
-// Create project
 app.post("/project", async (req, res) => {
     try {
         const { title, description } = req.body
@@ -109,61 +106,49 @@ app.post("/project", async (req, res) => {
     }
 })
 
-// View project page
 app.get("/project/:id", async (req, res) => {
     const project = await Project.findById(req.params.id).populate("messages.sender")
     if (!project) return res.status(404).send("Project not found")
-
     res.render("project", { project, currentUserId: req.session.userId })
 })
 
-
-// Send message in project
 app.post("/project/:id/message", async (req, res) => {
     try {
-        const project = await Project.findById(req.params.id).populate("messages.sender")
+        const project = await Project.findById(req.params.id)
         if (!project) return res.status(404).json({ success: false, error: "Project not found" })
 
-        // simulate logged-in user (later hook this to real auth)
         const senderId = req.session.userId || null
-
         const { message } = req.body
         project.messages.push({ sender: senderId, text: message })
         await project.save()
 
         const updated = await Project.findById(req.params.id).populate("messages.sender")
-
         res.json({ success: true, messages: updated.messages })
     } catch (err) {
         res.status(500).json({ success: false, error: err.message })
     }
 })
 
-
-// AI Converse route
+// ✅ Fixed /converse — parts defined before use
 app.post("/converse", upload.single("file"), async (req, res) => {
     const msg = req.body.message
     const file = req.file
 
     if (!msg && !file) {
-        return res.status(400).json({
-        success: false,
-        reply: "Empty input"
-    })
-}
-
+        return res.status(400).json({ success: false, reply: "Empty input" })
+    }
 
     try {
-        console.log("MSG:", msg)
-        console.log("FILE:", file)
-        console.log("PARTS:", JSON.stringify(parts, null, 2))
-        console.log("API KEY:", process.env.GEMINI_API_KEY ? "EXISTS" : "MISSING")
         if (!req.session.history) {
             req.session.history = []
         }
 
-        let parts = msg ? [{ text: msg }] : []
+        let parts = msg ? [{ text: msg }] : []  // ✅ defined BEFORE any console.log
+
+        console.log("MSG:", msg)
+        console.log("FILE:", file)
         console.log("PARTS:", JSON.stringify(parts, null, 2))
+        console.log("API KEY:", process.env.GEMINI_API_KEY ? "EXISTS" : "MISSING")
 
         if (file) {
             const uploadResult = await fileManager.uploadFile(file.path, {
@@ -177,7 +162,7 @@ app.post("/converse", upload.single("file"), async (req, res) => {
                 }
             })
         }
-        
+
         const chat = model.startChat({ history: req.session.history })
         const result = await chat.sendMessage(parts)
         const reply = result?.response?.candidates?.[0]?.content?.parts?.[0]?.text || "No response"
@@ -190,12 +175,8 @@ app.post("/converse", upload.single("file"), async (req, res) => {
         console.error("❌ FULL ERROR:", error)
         console.error("❌ MESSAGE:", error.message)
         console.error("❌ STACK:", error.stack)
-        
-        res.status(500).json({
-        success: false,
-        reply: "Error: Could not generate a response."
-    })
-}
+        res.status(500).json({ success: false, reply: "Error: Could not generate a response." })
+    }
 })
 
 const PORT = process.env.PORT || 3001;
