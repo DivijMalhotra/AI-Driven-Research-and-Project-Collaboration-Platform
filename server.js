@@ -50,14 +50,13 @@ const projectSchema = new mongoose.Schema({
     }]
 })
 
-
 const User = mongoose.model("User", userSchema)
 const Project = mongoose.model("Project", projectSchema)
 
 // AI setup
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
 const fileManager = new GoogleAIFileManager(process.env.GEMINI_API_KEY)
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" })
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
 
 // Routes
 // Homepage
@@ -146,12 +145,25 @@ app.post("/converse", upload.single("file"), async (req, res) => {
     const msg = req.body.message
     const file = req.file
 
+    if (!msg && !file) {
+        return res.status(400).json({
+        success: false,
+        reply: "Empty input"
+    })
+}
+
+
     try {
+        console.log("MSG:", msg)
+        console.log("FILE:", file)
+        console.log("PARTS:", JSON.stringify(parts, null, 2))
+        console.log("API KEY:", process.env.GEMINI_API_KEY ? "EXISTS" : "MISSING")
         if (!req.session.history) {
             req.session.history = []
         }
 
         let parts = msg ? [{ text: msg }] : []
+        console.log("PARTS:", JSON.stringify(parts, null, 2))
 
         if (file) {
             const uploadResult = await fileManager.uploadFile(file.path, {
@@ -165,21 +177,28 @@ app.post("/converse", upload.single("file"), async (req, res) => {
                 }
             })
         }
-
+        
         const chat = model.startChat({ history: req.session.history })
         const result = await chat.sendMessage(parts)
-        const reply = result.response.text()
+        const reply = result?.response?.candidates?.[0]?.content?.parts?.[0]?.text || "No response"
 
         req.session.history.push({ role: "user", parts })
         req.session.history.push({ role: "model", parts: [{ text: reply }] })
 
         res.json({ success: true, reply })
     } catch (error) {
-        console.error("Gemini API error:", error)
-        res.status(500).json({ success: false, reply: "Error: Could not generate a response." })
-    }
+        console.error("❌ FULL ERROR:", error)
+        console.error("❌ MESSAGE:", error.message)
+        console.error("❌ STACK:", error.stack)
+        
+        res.status(500).json({
+        success: false,
+        reply: "Error: Could not generate a response."
+    })
+}
 })
 
-app.listen(process.env.PORT, () => {
-    console.log(`🚀 Server running on port ${process.env.PORT}`)
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`)
 })
