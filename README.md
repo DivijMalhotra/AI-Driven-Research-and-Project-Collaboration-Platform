@@ -65,7 +65,7 @@ This creates an ecosystem where researchers can efficiently *connect, collaborat
 
 
 ### Project Room – Team Chat
-![WhatsApp Image 2025-08-20 at 22 21 44_a32e8239](https://github.com/user-attachments/assets/f3f6b123-6c41-45b9-8962-3c46ef8b4f45)
+<img width="1919" height="907" alt="Screenshot 2026-04-04 012740" src="https://github.com/user-attachments/assets/4700ed14-8ef5-4d7c-a6c4-43423686b413" />
 
 
 ## ⚙ How to Run the Project
