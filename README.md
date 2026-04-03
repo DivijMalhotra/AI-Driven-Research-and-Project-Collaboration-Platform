@@ -61,9 +61,7 @@ This creates an ecosystem where researchers can efficiently *connect, collaborat
 
 ## 📸 Screenshots
 ### Homepage – Profile, Collaborator Search, Project Creation & AI Chat
-![WhatsApp Image 2025-08-20 at 22 14 28_3d08d51a](https://github.com/user-attachments/assets/80bb1adf-9c34-4494-85ee-70ac482af327)
-![WhatsApp Image 2025-08-20 at 22 15 14_14343e72](https://github.com/user-attachments/assets/b260219f-fe9f-4d81-a37d-9c4c1fca688a)
-
+<img width="1918" height="902" alt="Screenshot 2026-03-21 173119" src="https://github.com/user-attachments/assets/5aef4c4e-f187-4735-b258-cfef7eada3bc" />
 
 
 ### Project Room – Team Chat
